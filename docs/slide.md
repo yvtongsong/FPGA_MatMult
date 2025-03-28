@@ -170,6 +170,7 @@ end
 <style scoped>
 .text-container {
 font-size:20px;
+margin: auto
 }
 </style>
 
@@ -196,12 +197,11 @@ typedef struct {
 	u32 *blk_tmp;
 	XAxiDma AxiDma;
 } MatCalc;
-
 u32 *mat_get_block(u32 *mat, int blk_row, int blk_col);
 int  mat_calc(MatCalc *m);
 void mat_init_example(MatCalc *m);
 u32  mat_get(u32 *mat, int i, int j);
-void mat_put(u32 *mut, int i, int j, u32 value);
+void mat_put(u32 *mat, int i, int j, u32 value);
 void mat_print(u32 *mat);
 ```
 
@@ -222,7 +222,7 @@ text-align: center;
 ## 分析原因
 
 - DMA本质上是串行传输器，对于FPGA来说，每个时钟周期只能接收一个数据
-    - 传输数据周期数：`> MATRIX_SIZE*MATRIX_SIZE*3`
+    - 传输数据周期数：`MATRIX_SIZE*MATRIX_SIZE*3`
     - 矩阵计算周期数：`1`
 - FPGA端没有缓存，导致大量数据被多次重复传输
 
@@ -238,7 +238,7 @@ text-align: center;
 
 - 用**板上带宽**优势取代**内存带宽**劣势
     - FPGA周围的BRAM类似于GPU周围的显存
-    - 将BRAM直接映射到内存，CPU使用`bramMalloc()`，利用PS-PL高速接口将数据直接写入BRAM
+    - 将BRAM直接映射到内存，ARM使用`bramMalloc()`，利用PS-PL高速接口将数据直接写入BRAM
 
 ---
 
